@@ -317,6 +317,36 @@ th {
   color: #9fd6bd;
 }
 
+.hint {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  color: var(--steam);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  border-left: 2px solid var(--warn);
+  background: rgba(196, 122, 34, 0.12);
+}
+
+.claim-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.claim-box input {
+  min-width: 110px;
+  padding: 7px 9px;
+}
+
+.claim-box button {
+  padding: 7px 12px;
+}
+
+.muted-text {
+  color: var(--muted);
+}
+
 @keyframes pin-pulse {
   0%,
   100% {

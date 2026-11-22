@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from app.db import connect
+from app.db import OUT_OF_FLIGHT, connect
 
 
 def today_str() -> str:
@@ -47,8 +47,11 @@ def seal_day(day: str | None = None, note: str = "") -> dict:
 
 
 def refresh_in_flight(conn) -> int:
+    # 架构 A：已取关账、丢失按损失出途，均不计在途。口径集中在 db.OUT_OF_FLIGHT。
+    placeholders = ",".join("?" for _ in OUT_OF_FLIGHT)
     n = conn.execute(
-        "SELECT COUNT(*) AS c FROM hang_tickets WHERE status NOT IN ('已取','丢失隔离')"
+        f"SELECT COUNT(*) AS c FROM hang_tickets WHERE status NOT IN ({placeholders})",
+        OUT_OF_FLIGHT,
     ).fetchone()["c"]
     now = datetime.now().replace(microsecond=0).isoformat(sep=" ")
     conn.execute(

@@ -42,6 +42,15 @@ class QuarantineIn(BaseModel):
     operator: str = "店员"
 
 
+class ClaimIn(BaseModel):
+    ticket_no: str
+    claimant: str
+    contact: str = ""
+    evidence: str = ""
+    note: str = ""
+    operator: str = "店员"
+
+
 @router.get("/挂牌")
 def list_tickets(
     status: str | None = Query(None),
@@ -73,3 +82,16 @@ def pickup(ticket_no: str, body: PickupIn):
 @router.post("/挂牌/{ticket_no}/隔离")
 def quarantine(ticket_no: str, body: QuarantineIn):
     return svc.quarantine(ticket_no, body.kind, body.reason, body.operator)
+
+
+@router.post("/认领")
+def claim(body: ClaimIn):
+    # 架构 A：认领仅审计留痕，不回改终态、不关丢失隔离行
+    payload = body.model_dump()
+    payload["ticket_no"] = body.ticket_no.strip()
+    return svc.claim_lost_ticket(payload)
+
+
+@router.get("/认领")
+def list_claims(ticket_no: str | None = Query(None)):
+    return svc.list_claims(ticket_no)
